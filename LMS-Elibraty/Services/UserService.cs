@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using LMS_Elibraty.Models;
 using System.ComponentModel.DataAnnotations;
 using LMS_Elibraty.DTOs;
 
@@ -15,10 +14,10 @@ namespace LMS_Elibraty.Services
 {
     public class UserService : IUserService
     {
-        private readonly LMSElibraryDbContext _context;
+        private readonly LMSElibraryContext _context;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;   
-        public UserService(LMSElibraryDbContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public UserService(LMSElibraryContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _configuration = configuration;
@@ -144,7 +143,7 @@ namespace LMS_Elibraty.Services
             string prefix;
             int counter;
 
-            if (role == Role.Admin||role==Role.Teacher)
+            if (role.Name == "Admin"|| role.Name == "Teacher")
             {
                 prefix = "GV";
                 counter = ++adminCounter;

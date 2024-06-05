@@ -32,7 +32,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<LMSElibraryDbContext>(options =>
+builder.Services.AddDbContext<LMSElibraryContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
