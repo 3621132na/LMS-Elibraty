@@ -1,6 +1,6 @@
 ﻿using LMS_Elibraty.Data;
 using LMS_Elibraty.DTOs;
-using LMS_Elibraty.Services;
+using LMS_Elibraty.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -19,7 +19,7 @@ namespace LMS_Elibraty.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost("register")]
-        [Authorize(Roles ="Admin")]
+        //[Authorize(Roles ="Admin")]
         public async Task<IActionResult> Register(User user)
         {
             try
@@ -33,7 +33,7 @@ namespace LMS_Elibraty.Controllers
             }
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             try
             {
@@ -141,7 +141,7 @@ namespace LMS_Elibraty.Controllers
         }
         [HttpPost("changepassword/{id}")]
         [Authorize]
-        public async Task<IActionResult> ChangePassword(string id, ChangePasswordModel model)
+        public async Task<IActionResult> ChangePassword(string id, ChangePasswordViewModel model)
         {
             try
             {

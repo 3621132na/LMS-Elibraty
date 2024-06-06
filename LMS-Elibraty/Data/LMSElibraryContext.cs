@@ -223,7 +223,7 @@ namespace LMS_Elibraty.Data
 
             modelBuilder.Entity<RolePermission>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.RoleId, e.PermissionId });
 
                 entity.ToTable("RolePermission");
 

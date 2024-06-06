@@ -1,6 +1,6 @@
 ﻿namespace LMS_Elibraty.DTOs
 {
-    public class LoginModel
+    public class LoginViewModel
     {
         public string Email { get; set; }
         public string Password { get; set; }

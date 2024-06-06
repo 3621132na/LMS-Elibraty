@@ -10,13 +10,13 @@ using System.Text;
 using System.ComponentModel.DataAnnotations;
 using LMS_Elibraty.DTOs;
 
-namespace LMS_Elibraty.Services
+namespace LMS_Elibraty.Services.Users
 {
     public class UserService : IUserService
     {
         private readonly LMSElibraryContext _context;
         private readonly IConfiguration _configuration;
-        private readonly IWebHostEnvironment _webHostEnvironment;   
+        private readonly IWebHostEnvironment _webHostEnvironment;
         public UserService(LMSElibraryContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
@@ -38,7 +38,7 @@ namespace LMS_Elibraty.Services
             return user;
         }
 
-        public async Task<string> Login(LoginModel model)
+        public async Task<string> Login(LoginViewModel model)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
             if (user == null || !BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
@@ -57,7 +57,7 @@ namespace LMS_Elibraty.Services
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<User> Update(string id,UserViewModel user)
+        public async Task<User> Update(string id, UserViewModel user)
         {
             var existingUser = await _context.Users.FindAsync(id);
             if (existingUser == null)
@@ -104,7 +104,7 @@ namespace LMS_Elibraty.Services
             return true;
         }
 
-        public async Task<User> ChangePassword(string id,ChangePasswordModel model)
+        public async Task<User> ChangePassword(string id, ChangePasswordViewModel model)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
@@ -143,7 +143,7 @@ namespace LMS_Elibraty.Services
             string prefix;
             int counter;
 
-            if (role.Name == "Admin"|| role.Name == "Teacher")
+            if (role.Name == "Admin" || role.Name == "Teacher")
             {
                 prefix = "GV";
                 counter = ++adminCounter;
