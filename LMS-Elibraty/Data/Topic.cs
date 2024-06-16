@@ -11,7 +11,7 @@ namespace LMS_Elibraty.Data
         }
 
         public int Id { get; set; }
-        public int SubjectId { get; set; }
+        public string SubjectId { get; set; } = null!;
         public string Topic1 { get; set; } = null!;
 
         public virtual Subject Subject { get; set; } = null!;

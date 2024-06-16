@@ -10,14 +10,15 @@ namespace LMS_Elibraty.Data
             ExamDetails = new HashSet<ExamDetail>();
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
-        public int SubjectId { get; set; }
+        public string SubjectId { get; set; } = null!;
         public string Category { get; set; } = null!;
         public string Form { get; set; } = null!;
         public int Time { get; set; }
         public string Status { get; set; } = null!;
         public DateTime CreateAt { get; set; }
+        public string Level { get; set; } = null!;
 
         public virtual Subject Subject { get; set; } = null!;
         public virtual ICollection<ExamDetail> ExamDetails { get; set; }

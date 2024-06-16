@@ -9,10 +9,10 @@ namespace LMS_Elibraty.Data
         {
             Answers = new HashSet<Answer>();
             Asks = new HashSet<Ask>();
-            DocumentApprovedByNavigations = new HashSet<Document>();
-            DocumentCreateByNavigations = new HashSet<Document>();
+            DocumentApprovedByNavigations = new HashSet<Documents>();
+            DocumentCreateByNavigations = new HashSet<Documents>();
             FeedBacks = new HashSet<FeedBack>();
-            Files = new HashSet<File>();
+            Files = new HashSet<Files>();
             Subjects = new HashSet<Subject>();
         }
 
@@ -25,17 +25,16 @@ namespace LMS_Elibraty.Data
         public string Address { get; set; } = null!;
         public string? Avatar { get; set; }
         public int RoleId { get; set; }
-        public string? Faculty { get; set; }
-        public int? ClassId { get; set; }
+        public string? ClassId { get; set; }
 
         public virtual Class? Class { get; set; }
-        public virtual Role Role { get; set; } = null!;
+        public virtual Role? Role { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
         public virtual ICollection<Ask> Asks { get; set; }
-        public virtual ICollection<Document> DocumentApprovedByNavigations { get; set; }
-        public virtual ICollection<Document> DocumentCreateByNavigations { get; set; }
+        public virtual ICollection<Documents> DocumentApprovedByNavigations { get; set; }
+        public virtual ICollection<Documents> DocumentCreateByNavigations { get; set; }
         public virtual ICollection<FeedBack> FeedBacks { get; set; }
-        public virtual ICollection<File> Files { get; set; }
+        public virtual ICollection<Files> Files { get; set; }
         public virtual ICollection<Subject> Subjects { get; set; }
     }
 }

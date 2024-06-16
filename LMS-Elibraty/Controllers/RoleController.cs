@@ -1,14 +1,13 @@
 ﻿using LMS_Elibraty.Data;
-using LMS_Elibraty.DTOs;
+using LMS_Elibraty.Models;
 using LMS_Elibraty.Services.Roles;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS_Elibraty.Controllers
 {
-    //[Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
     public class RoleController : ControllerBase

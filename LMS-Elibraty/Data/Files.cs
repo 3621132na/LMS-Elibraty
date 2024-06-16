@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LMS_Elibraty.Data
 {
-    public partial class File
+    public partial class Files
     {
         public int Id { get; set; }
         public string Category { get; set; } = null!;
@@ -12,7 +12,7 @@ namespace LMS_Elibraty.Data
         public DateTime UpdateAt { get; set; }
         public int Size { get; set; }
         public int? LessonId { get; set; }
-
+        public string Url { get; set; }
         public virtual User UpdateByNavigation { get; set; } = null!;
     }
 }

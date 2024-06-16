@@ -1,5 +1,5 @@
 ﻿using LMS_Elibraty.Data;
-using LMS_Elibraty.DTOs;
+using LMS_Elibraty.Models;
 
 namespace LMS_Elibraty.Services.Users
 {

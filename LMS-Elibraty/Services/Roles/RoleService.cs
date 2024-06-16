@@ -1,8 +1,5 @@
 ﻿using LMS_Elibraty.Data;
-using LMS_Elibraty.DTOs;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
 namespace LMS_Elibraty.Services.Roles
 {

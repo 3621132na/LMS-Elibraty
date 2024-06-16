@@ -19,18 +19,19 @@ namespace LMS_Elibraty.Data
         public virtual DbSet<Answer> Answers { get; set; } = null!;
         public virtual DbSet<Ask> Asks { get; set; } = null!;
         public virtual DbSet<Class> Classes { get; set; } = null!;
-        public virtual DbSet<Document> Documents { get; set; } = null!;
+        public virtual DbSet<Documents> Documents { get; set; } = null!;
         public virtual DbSet<Exam> Exams { get; set; } = null!;
         public virtual DbSet<ExamDetail> ExamDetails { get; set; } = null!;
+        public virtual DbSet<Faculty> Faculties { get; set; } = null!;
         public virtual DbSet<FeedBack> FeedBacks { get; set; } = null!;
-        public virtual DbSet<File> Files { get; set; } = null!;
+        public virtual DbSet<Files> Files { get; set; } = null!;
         public virtual DbSet<Lesson> Lessons { get; set; } = null!;
         public virtual DbSet<Permission> Permissions { get; set; } = null!;
         public virtual DbSet<Role> Roles { get; set; } = null!;
         public virtual DbSet<RolePermission> RolePermissions { get; set; } = null!;
         public virtual DbSet<Subject> Subjects { get; set; } = null!;
         public virtual DbSet<SubjectClass> SubjectClasses { get; set; } = null!;
-        public virtual DbSet<System> Systems { get; set; } = null!;
+        public virtual DbSet<Systems> Systems { get; set; } = null!;
         public virtual DbSet<Topic> Topics { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
@@ -70,6 +71,8 @@ namespace LMS_Elibraty.Data
 
                 entity.Property(e => e.Date).HasColumnType("datetime");
 
+                entity.Property(e => e.SubjectId).HasMaxLength(10);
+
                 entity.Property(e => e.Title).HasMaxLength(50);
 
                 entity.Property(e => e.UserId).HasMaxLength(10);
@@ -91,10 +94,18 @@ namespace LMS_Elibraty.Data
             {
                 entity.ToTable("Class");
 
+                entity.Property(e => e.Id).HasMaxLength(10);
+
                 entity.Property(e => e.Name).HasMaxLength(50);
+
+                entity.HasOne(d => d.Faculty)
+                    .WithMany(p => p.Classes)
+                    .HasForeignKey(d => d.FacultyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Class_Faculty");
             });
 
-            modelBuilder.Entity<Document>(entity =>
+            modelBuilder.Entity<Documents>(entity =>
             {
                 entity.ToTable("Document");
 
@@ -128,15 +139,21 @@ namespace LMS_Elibraty.Data
             {
                 entity.ToTable("Exam");
 
+                entity.Property(e => e.Id).HasMaxLength(10);
+
                 entity.Property(e => e.Category).HasMaxLength(50);
 
                 entity.Property(e => e.CreateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.Form).HasMaxLength(50);
 
+                entity.Property(e => e.Level).HasMaxLength(10);
+
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.Status).HasMaxLength(50);
+
+                entity.Property(e => e.SubjectId).HasMaxLength(10);
 
                 entity.HasOne(d => d.Subject)
                     .WithMany(p => p.Exams)
@@ -149,6 +166,8 @@ namespace LMS_Elibraty.Data
             {
                 entity.Property(e => e.Answer).HasMaxLength(50);
 
+                entity.Property(e => e.ExamId).HasMaxLength(10);
+
                 entity.Property(e => e.Question).HasMaxLength(50);
 
                 entity.Property(e => e.Select).HasMaxLength(50);
@@ -158,6 +177,13 @@ namespace LMS_Elibraty.Data
                     .HasForeignKey(d => d.ExamId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ExamDetails_Exam");
+            });
+
+            modelBuilder.Entity<Faculty>(entity =>
+            {
+                entity.ToTable("Faculty");
+
+                entity.Property(e => e.Name).HasMaxLength(50);
             });
 
             modelBuilder.Entity<FeedBack>(entity =>
@@ -173,7 +199,7 @@ namespace LMS_Elibraty.Data
                     .HasConstraintName("FK_FeedBack_Users");
             });
 
-            modelBuilder.Entity<File>(entity =>
+            modelBuilder.Entity<Files>(entity =>
             {
                 entity.ToTable("File");
 
@@ -184,7 +210,7 @@ namespace LMS_Elibraty.Data
                 entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
                 entity.Property(e => e.UpdateBy).HasMaxLength(10);
-
+                entity.Property(e => e.Url).HasMaxLength(50);
                 entity.HasOne(d => d.UpdateByNavigation)
                     .WithMany(p => p.Files)
                     .HasForeignKey(d => d.UpdateBy)
@@ -244,6 +270,8 @@ namespace LMS_Elibraty.Data
             {
                 entity.ToTable("Subject");
 
+                entity.Property(e => e.Id).HasMaxLength(10);
+
                 entity.Property(e => e.Name).HasMaxLength(50);
 
                 entity.Property(e => e.SentDate).HasColumnType("datetime");
@@ -261,9 +289,13 @@ namespace LMS_Elibraty.Data
 
             modelBuilder.Entity<SubjectClass>(entity =>
             {
-                entity.HasNoKey();
+                entity.HasKey(e => new { e.SubjectId, e.ClassId });
 
                 entity.ToTable("SubjectClass");
+
+                entity.Property(e => e.ClassId).HasMaxLength(10);
+
+                entity.Property(e => e.SubjectId).HasMaxLength(10);
 
                 entity.HasOne(d => d.Class)
                     .WithMany()
@@ -278,7 +310,7 @@ namespace LMS_Elibraty.Data
                     .HasConstraintName("FK_SubjectClass_Subject");
             });
 
-            modelBuilder.Entity<System>(entity =>
+            modelBuilder.Entity<Systems>(entity =>
             {
                 entity.ToTable("System");
 
@@ -301,6 +333,8 @@ namespace LMS_Elibraty.Data
             {
                 entity.ToTable("Topic");
 
+                entity.Property(e => e.SubjectId).HasMaxLength(10);
+
                 entity.Property(e => e.Topic1)
                     .HasMaxLength(50)
                     .HasColumnName("Topic");
@@ -316,15 +350,13 @@ namespace LMS_Elibraty.Data
             {
                 entity.Property(e => e.Id).HasMaxLength(10);
 
-                entity.Property(e => e.Email).HasMaxLength(50);
+                entity.Property(e => e.ClassId).HasMaxLength(10);
 
-                entity.Property(e => e.Faculty).HasMaxLength(50);
+                entity.Property(e => e.Email).HasMaxLength(50);
 
                 entity.Property(e => e.Gender).HasMaxLength(50);
 
                 entity.Property(e => e.Name).HasMaxLength(50);
-
-                entity.Property(e => e.Password).HasMaxLength(50);
 
                 entity.Property(e => e.Phone).HasMaxLength(10);
 
@@ -336,7 +368,6 @@ namespace LMS_Elibraty.Data
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Users)
                     .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Users_Role");
             });
 

@@ -1,6 +1,6 @@
 ﻿using LMS_Elibraty.Data;
 
-namespace LMS_Elibraty.DTOs
+namespace LMS_Elibraty.Models
 {
     public class CreateRoleViewModel
     {

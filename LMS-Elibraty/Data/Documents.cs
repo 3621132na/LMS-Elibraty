@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace LMS_Elibraty.Data
 {
-    public partial class Document
+    public partial class Documents
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;

@@ -1,27 +1,29 @@
 ﻿using LMS_Elibraty.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
-using System.Net;
 using System.Text.RegularExpressions;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
-using LMS_Elibraty.DTOs;
+using LMS_Elibraty.Models;
+using LMS_Elibraty.Services.Emails;
+using System.Data;
 
 namespace LMS_Elibraty.Services.Users
 {
-    public class UserService : IUserService
+    public class UserService : IUserService 
     {
         private readonly LMSElibraryContext _context;
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        public UserService(LMSElibraryContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        private readonly IEmailService _emailService;
+        public UserService(LMSElibraryContext context, IConfiguration configuration, IWebHostEnvironment webHostEnvironment,IEmailService emailService)
         {
             _context = context;
             _configuration = configuration;
             _webHostEnvironment = webHostEnvironment;
+            _emailService = emailService;
         }
         private int adminCounter = 0;
         private int studentCounter = 0;
@@ -30,7 +32,7 @@ namespace LMS_Elibraty.Services.Users
             if (await _context.Users.AnyAsync(u => u.Email == user.Email))
                 throw new Exception("Email already exists");
             ValidatePhoneNumber(user.Phone);
-            user.Id = GenerateUserId(user.Role);
+            user.Id = GenerateUserId(user.RoleId);
             ValidatePassword(user.Password);
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             _context.Users.Add(user);
@@ -76,11 +78,16 @@ namespace LMS_Elibraty.Services.Users
             var user = await _context.Users.FindAsync(id);
             if (user == null)
                 throw new KeyNotFoundException("User not found");
+            string directory;
+            if (user.RoleId == 3)
+                directory = "wwwroot/avatars/hv";
+            else
+                directory = "wwwroot/avatars/gv";
             if (avatar != null && avatar.Length > 0)
             {
                 var fileName = $"{id}_{Path.GetFileName(avatar.FileName)}";
-                var filePath = Path.Combine("wwwroot/avatars", fileName);
-                var directory = Path.GetDirectoryName(filePath);
+
+                var filePath = Path.Combine(directory, fileName);
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -129,7 +136,7 @@ namespace LMS_Elibraty.Services.Users
             user.Password = BCrypt.Net.BCrypt.HashPassword(newPassword);
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
-            SendEmail(user.Email, "Password Reset", $"Your new password is: {newPassword}");
+            _emailService.SendEmail(user.Email, "Password Reset", $"Your new password is: {newPassword}");
             return true;
         }
         private void ValidatePhoneNumber(string phoneNumber)
@@ -138,12 +145,12 @@ namespace LMS_Elibraty.Services.Users
             if (!regex.IsMatch(phoneNumber))
                 throw new ValidationException("Phone number must start with 0 and be exactly 10 digits.");
         }
-        private string GenerateUserId(Role role)
+        private string GenerateUserId(int role)
         {
             string prefix;
             int counter;
 
-            if (role.Name == "Admin" || role.Name == "Teacher")
+            if (role == 1 || role == 2)
             {
                 prefix = "GV";
                 counter = ++adminCounter;
@@ -169,6 +176,7 @@ namespace LMS_Elibraty.Services.Users
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var roleName = _context.Roles.FirstOrDefault(r => r.Id == user.RoleId)?.Name;
             var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -177,7 +185,7 @@ namespace LMS_Elibraty.Services.Users
             new Claim(ClaimTypes.MobilePhone, user.Phone),
             new Claim(ClaimTypes.Gender, user.Gender.ToString()),
             new Claim(ClaimTypes.StreetAddress, user.Address),
-            new Claim(ClaimTypes.Role, user.Role.ToString())
+            new Claim(ClaimTypes.Role, roleName)
         };
             var token = new JwtSecurityToken(
                 _configuration["Jwt:Issuer"],
@@ -204,24 +212,6 @@ namespace LMS_Elibraty.Services.Users
             for (int i = 4; i < passwordChars.Length; i++)
                 passwordChars[i] = allChars[random.Next(allChars.Length)];
             return new string(passwordChars.OrderBy(c => random.Next()).ToArray());
-        }
-        private void SendEmail(string toEmail, string subject, string body)
-        {
-            var smtpClient = new SmtpClient(_configuration["Smtp:Host"])
-            {
-                Port = int.Parse(_configuration["Smtp:Port"]),
-                Credentials = new NetworkCredential(_configuration["Smtp:Username"], _configuration["Smtp:Password"]),
-                EnableSsl = true,
-            };
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_configuration["Smtp:FromEmail"]),
-                Subject = subject,
-                Body = body,
-                IsBodyHtml = true,
-            };
-            mailMessage.To.Add(toEmail);
-            smtpClient.Send(mailMessage);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using LMS_Elibraty.Data;
-using LMS_Elibraty.DTOs;
+using LMS_Elibraty.Models;
 using LMS_Elibraty.Services.Users;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ namespace LMS_Elibraty.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
         [HttpPost("register")]
-        //[Authorize(Roles ="Admin")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Register(User user)
         {
             try
@@ -53,7 +53,7 @@ namespace LMS_Elibraty.Controllers
             return Ok(new { message = "Logout successful." });
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public async Task<IActionResult> Detail(string id)
         {
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;

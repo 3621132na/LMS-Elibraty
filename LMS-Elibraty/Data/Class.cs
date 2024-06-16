@@ -10,9 +10,11 @@ namespace LMS_Elibraty.Data
             Users = new HashSet<User>();
         }
 
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
+        public int FacultyId { get; set; }
 
+        public virtual Faculty Faculty { get; set; } = null!;
         public virtual ICollection<User> Users { get; set; }
     }
 }

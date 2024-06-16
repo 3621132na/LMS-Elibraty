@@ -1,4 +1,4 @@
-﻿namespace LMS_Elibraty.DTOs
+﻿namespace LMS_Elibraty.Models
 {
     public class LoginViewModel
     {
